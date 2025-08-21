@@ -68,6 +68,9 @@ export function MovieCard({ movie, onVote }: MovieCardProps) {
 
       <Dialog open={isPlayerOpen} onOpenChange={setPlayerOpen}>
         <DialogContent className="max-w-4xl p-0">
+          <DialogHeader>
+            <DialogTitle className="sr-only">{movie.title}</DialogTitle>
+          </DialogHeader>
           <div className="aspect-video">
             <iframe
               width="100%"
