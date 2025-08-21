@@ -1,7 +1,6 @@
 "use client";
 
 import type { Movie } from "@/lib/types";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import Image from 'next/image';
@@ -14,26 +13,29 @@ interface MovieCardProps {
   isSelected: boolean;
 }
 
-export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProps) {
+export function MovieCard({ movie, onVote, onSelect }: MovieCardProps) {
   const thumbnailUrl = getYouTubeThumbnail(movie.url);
 
   return (
-    <Card 
-      className={`flex items-center gap-4 p-2 transition-all duration-200 cursor-pointer hover:bg-muted/60 ${isSelected ? 'bg-muted' : ''}`}
+    <div 
+      className={`flex flex-col gap-2 transition-all duration-200 cursor-pointer group`}
       onClick={() => onSelect(movie)}
     >
-      <div className="w-32 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0 relative">
-        {thumbnailUrl && (
+      <div className="w-full aspect-video bg-muted rounded-lg overflow-hidden flex-shrink-0 relative">
+        {thumbnailUrl ? (
           <Image 
             src={thumbnailUrl} 
             alt={`Thumbnail for ${movie.title}`}
             layout="fill"
             objectFit="cover"
+            className={`transition-transform duration-300 ${isSelected ? 'scale-105' : 'group-hover:scale-105'}`}
           />
+        ) : (
+          <div className="w-full h-full bg-muted"></div>
         )}
       </div>
-      <CardContent className="flex-grow p-0 space-y-1">
-        <p className="font-semibold leading-tight line-clamp-2">{movie.title}</p>
+      <div className="flex-grow space-y-1">
+        <p className={`font-semibold leading-tight line-clamp-2 ${isSelected ? 'text-primary' : ''}`}>{movie.title}</p>
         <div className="flex items-center gap-1">
           <Button
               size="sm"
@@ -55,7 +57,7 @@ export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProp
               <ArrowDown className="h-4 w-4" />
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
