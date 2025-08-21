@@ -65,8 +65,6 @@ export default function Home() {
     });
   };
 
-  const otherMovies = filteredMovies.filter(movie => movie.id !== selectedMovie?.id);
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <Header onAddMovieClick={() => setAddMovieOpen(true)} />
@@ -154,7 +152,7 @@ export default function Home() {
                 </div>
             ) : (
                 <div className="flex max-h-[calc(100vh-15rem)] flex-col gap-4 overflow-y-auto">
-                    {otherMovies.map((movie) => (
+                    {filteredMovies.map((movie) => (
                       <button 
                         key={movie.id} 
                         onClick={() => setSelectedMovie(movie)}
