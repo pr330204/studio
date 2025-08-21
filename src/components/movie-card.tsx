@@ -1,90 +1,61 @@
 "use client";
 
 import type { Movie } from "@/lib/types";
-import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUp, ArrowDown, PlayCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import Image from 'next/image';
+import { getYouTubeThumbnail } from "@/lib/utils";
 
 interface MovieCardProps {
   movie: Movie;
   onVote: (id: string, type: "up" | "down") => void;
+  onSelect: (movie: Movie) => void;
+  isSelected: boolean;
 }
 
-export function MovieCard({ movie, onVote }: MovieCardProps) {
-  const [isPlayerOpen, setPlayerOpen] = useState(false);
+export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProps) {
+  const thumbnailUrl = getYouTubeThumbnail(movie.url);
 
   return (
-    <>
-      <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border-border/60 bg-card group">
-        <CardContent className="flex-grow p-0">
-          <div className="aspect-video w-full bg-muted flex items-center justify-center relative">
-             <button
-              onClick={() => setPlayerOpen(true)}
-              aria-label="Play video"
-              className="absolute inset-0 z-10 flex items-center justify-center transition-opacity opacity-0 group-hover:opacity-100 bg-black/60"
-            >
-              <PlayCircle className="h-20 w-20 text-white/90 transform transition-transform group-hover:scale-110" />
-            </button>
-             <iframe
-              width="100%"
-              height="100%"
-              src={movie.url.replace('watch?v=', 'embed/').split('&')[0] + '?rel=0&showinfo=0&autohide=1&controls=0'}
-              title={`Trailer for ${movie.title}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full object-cover transition-transform group-hover:scale-105"
-            ></iframe>
-          </div>
-        </CardContent>
-        <CardHeader className="py-4">
-            <div className="flex items-start justify-between gap-4">
-                <CardTitle className="text-lg font-semibold">{movie.title}</CardTitle>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => onVote(movie.id, "up")}
-                        aria-label="Upvote"
-                        className="rounded-full p-2 h-9 w-9 hover:bg-green-500/10 text-green-500"
-                    >
-                        <ArrowUp className="h-5 w-5" />
-                    </Button>
-                    <span className="font-bold text-lg tabular-nums w-8 text-center">{movie.votes}</span>
-                     <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => onVote(movie.id, "down")}
-                        aria-label="Downvote"
-                        className="rounded-full p-2 h-9 w-9 hover:bg-red-500/10 text-red-500"
-                    >
-                        <ArrowDown className="h-5 w-5" />
-                    </Button>
-                </div>
-            </div>
-        </CardHeader>
-      </Card>
-
-      <Dialog open={isPlayerOpen} onOpenChange={setPlayerOpen}>
-        <DialogContent className="max-w-4xl p-0 border-0">
-          <DialogHeader>
-            <DialogTitle className="sr-only">{`Player for ${movie.title}`}</DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video">
-            <iframe
-              width="100%"
-              height="100%"
-              src={movie.url.replace('watch?v=', 'embed/').split('&')[0] + '?autoplay=1&rel=0'}
-              title={`Trailer for ${movie.title}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Card 
+      className={`flex items-center gap-4 p-2 transition-all duration-200 cursor-pointer hover:bg-muted/60 ${isSelected ? 'bg-muted' : ''}`}
+      onClick={() => onSelect(movie)}
+    >
+      <div className="w-32 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0 relative">
+        {thumbnailUrl && (
+          <Image 
+            src={thumbnailUrl} 
+            alt={`Thumbnail for ${movie.title}`}
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
+      </div>
+      <CardContent className="flex-grow p-0 space-y-1">
+        <p className="font-semibold leading-tight line-clamp-2">{movie.title}</p>
+        <div className="flex items-center gap-1">
+          <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => { e.stopPropagation(); onVote(movie.id, "up"); }}
+              aria-label="Upvote"
+              className="rounded-full p-1 h-7 w-7 hover:bg-green-500/10 text-green-500"
+          >
+              <ArrowUp className="h-4 w-4" />
+          </Button>
+          <span className="font-bold text-sm tabular-nums w-6 text-center">{movie.votes}</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => { e.stopPropagation(); onVote(movie.id, "down"); }}
+              aria-label="Downvote"
+              className="rounded-full p-1 h-7 w-7 hover:bg-red-500/10 text-red-500"
+          >
+              <ArrowDown className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
