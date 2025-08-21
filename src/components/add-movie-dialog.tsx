@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { checkMovieLinkAction } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 import type { Movie } from "@/lib/types";
+import { getYouTubeEmbedUrl } from "@/lib/utils";
 
 const formSchema = z.object({
   movieTitle: z.string().min(1, "Movie title is required."),
@@ -60,7 +61,8 @@ export function AddMovieDialog({ isOpen, onOpenChange, onMovieAdded }: AddMovieD
           title: "Success!",
           description: result.message,
         });
-        onMovieAdded({ title: values.movieTitle, url: values.movieLink });
+        const embedUrl = getYouTubeEmbedUrl(values.movieLink) || values.movieLink;
+        onMovieAdded({ title: values.movieTitle, url: embedUrl });
         onOpenChange(false);
         form.reset();
       } else {
@@ -105,7 +107,7 @@ export function AddMovieDialog({ isOpen, onOpenChange, onMovieAdded }: AddMovieD
                   <FormItem>
                     <FormLabel>Movie URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/movie" {...field} />
+                      <Input placeholder="https://youtube.com/watch?v=..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

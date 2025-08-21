@@ -77,7 +77,9 @@ export function SuggestMovieDialog({
   const handleAddToList = () => {
     if (suggestedTitle) {
       // Create a YouTube search URL for the trailer as a placeholder link
-      const youtubeSearchUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(suggestedTitle + ' trailer')}`;
+      const youtubeSearchUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(
+        suggestedTitle + " trailer"
+      )}`;
       onMovieSuggested(suggestedTitle, youtubeSearchUrl);
       form.reset();
       setSuggestedTitle(null);
