@@ -1,45 +1,30 @@
 "use client";
 
 import type { Movie } from "@/lib/types";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/header";
 import { MovieList } from "@/components/movie-list";
 import { AddMovieDialog } from "@/components/add-movie-dialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-
-// Initial placeholder data for movies
-const initialMovies: Movie[] = [
-  {
-    id: "1",
-    title: "Inception",
-    url: "https://www.youtube.com/embed/YoHD9XEInc0",
-    votes: 25,
-  },
-  {
-    id: "2",
-    title: "The Matrix",
-    url: "https://www.youtube.com/embed/vKQi3bBA1y8",
-    votes: 30,
-  },
-  {
-    id: "3",
-    title: "Interstellar",
-    url: "https://www.youtube.com/embed/zSWdZVtXT7E",
-    votes: 22,
-  },
-  {
-    id: "4",
-    title: "Parasite",
-    url: "https://www.youtube.com/embed/5xH0HfJHsaY",
-    votes: 18,
-  },
-];
+import { db } from "@/lib/firebase";
+import { collection, onSnapshot, addDoc, doc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
 
 export default function Home() {
-  const [movies, setMovies] = useState<Movie[]>(initialMovies);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isAddMovieOpen, setAddMovieOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "movies"), (snapshot) => {
+      const moviesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Movie));
+      setMovies(moviesData);
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, []);
 
   const sortedAndFilteredMovies = useMemo(() => {
     const sorted = [...movies].sort((a, b) => b.votes - a.votes);
@@ -51,23 +36,19 @@ export default function Home() {
     );
   }, [movies, searchQuery]);
 
-  const handleVote = (id: string, type: "up" | "down") => {
-    setMovies((prevMovies) =>
-      prevMovies.map((movie) =>
-        movie.id === id
-          ? { ...movie, votes: movie.votes + (type === "up" ? 1 : -1) }
-          : movie
-      )
-    );
+  const handleVote = async (id: string, type: "up" | "down") => {
+    const movieRef = doc(db, "movies", id);
+    await updateDoc(movieRef, {
+      votes: increment(type === "up" ? 1 : -1)
+    });
   };
 
-  const handleAddMovie = (movie: Omit<Movie, "id" | "votes">) => {
-    const newMovie: Movie = {
+  const handleAddMovie = async (movie: Omit<Movie, "id" | "votes">) => {
+    await addDoc(collection(db, "movies"), {
       ...movie,
-      id: Date.now().toString(),
       votes: 0,
-    };
-    setMovies((prevMovies) => [newMovie, ...prevMovies]);
+      createdAt: serverTimestamp(),
+    });
   };
 
   return (
@@ -95,7 +76,13 @@ export default function Home() {
               />
             </div>
           </div>
-          <MovieList movies={sortedAndFilteredMovies} onVote={handleVote} />
+          {loading ? (
+             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-12 text-center">
+                <h3 className="text-xl font-semibold tracking-tight">Loading videos...</h3>
+             </div>
+          ) : (
+            <MovieList movies={sortedAndFilteredMovies} onVote={handleVote} />
+          )}
         </div>
       </main>
       <AddMovieDialog
