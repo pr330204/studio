@@ -13,7 +13,7 @@ interface MovieCardProps {
   isSelected: boolean;
 }
 
-export function MovieCard({ movie, onVote, onSelect }: MovieCardProps) {
+export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProps) {
   const thumbnailUrl = getYouTubeThumbnail(movie.url);
 
   return (
