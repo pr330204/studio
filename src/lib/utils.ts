@@ -20,8 +20,12 @@ function getYouTubeVideoId(url: string): string | null {
       }
     }
   } catch (error) {
-    // Not a valid URL, ignore
-    return null;
+    // Attempt to parse non-URL strings
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    if (match) {
+      videoId = match[1];
+    }
   }
   return videoId;
 }
