@@ -69,10 +69,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mb-8 flex h-48 items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 text-muted-foreground">
-            Ad Placeholder (Top) - 728x90
-          </div>
-
           {loading ? (
              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
@@ -95,13 +91,6 @@ export default function Home() {
           )}
         </div>
       </main>
-      <footer className="px-4 py-6 md:px-6 lg:px-8">
-        <div className="container max-w-7xl">
-          <div className="flex h-48 items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 text-muted-foreground">
-            Ad Placeholder (Footer) - 728x90
-          </div>
-        </div>
-      </footer>
       <AddMovieDialog
         isOpen={isAddMovieOpen}
         onOpenChange={setAddMovieOpen}
