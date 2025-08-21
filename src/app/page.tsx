@@ -52,33 +52,34 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-background to-background/80">
       <Header onAddMovieClick={() => setAddMovieOpen(true)} />
       <main className="flex-1 px-4 py-8 md:px-6 lg:px-8">
-        <div className="container mx-auto">
-          <div className="mb-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="container mx-auto max-w-7xl">
+          <div className="mb-8 flex flex-col items-center justify-between gap-6 sm:flex-row">
             <div className="text-center sm:text-left">
-              <h1 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
                 Community Watchlist
               </h1>
-              <p className="text-muted-foreground">
+              <p className="mt-2 text-lg text-muted-foreground">
                 Vote for your favorite videos to watch next.
               </p>
             </div>
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search videos..."
-                className="pl-10"
+                className="h-12 rounded-full border-2 border-border/60 bg-muted/40 pl-12 text-base focus:border-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
           {loading ? (
-             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-12 text-center">
-                <h3 className="text-xl font-semibold tracking-tight">Loading videos...</h3>
+             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-24 text-center">
+                <h3 className="text-2xl font-semibold tracking-tight">Loading videos...</h3>
+                <p className="mt-2 text-muted-foreground">Please wait a moment.</p>
              </div>
           ) : (
             <MovieList movies={sortedAndFilteredMovies} onVote={handleVote} />
