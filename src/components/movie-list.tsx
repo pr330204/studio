@@ -8,13 +8,13 @@ interface MovieListProps {
   selectedMovieId?: string;
 }
 
-export function MovieList({ movies, onVote, onMovieSelect, selectedMovieId }: MovieListProps) {
+export function MovieList({ movies, onVote }: MovieListProps) {
   if (movies.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-12 text-center">
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-12 text-center col-span-full">
         <h3 className="text-lg font-semibold tracking-tight">No videos found</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Try a different search.
+          Try a different search or add a new video.
         </p>
       </div>
     );
@@ -27,8 +27,6 @@ export function MovieList({ movies, onVote, onMovieSelect, selectedMovieId }: Mo
           key={movie.id} 
           movie={movie} 
           onVote={onVote}
-          onSelect={onMovieSelect}
-          isSelected={movie.id === selectedMovieId}
         />
       ))}
     </div>

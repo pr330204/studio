@@ -18,11 +18,9 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 interface MovieCardProps {
   movie: Movie;
   onVote: (id: string, type: "up" | "down") => void;
-  onSelect: (movie: Movie) => void;
-  isSelected: boolean;
 }
 
-export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProps) {
+export function MovieCard({ movie, onVote }: MovieCardProps) {
   const thumbnailUrl = getYouTubeThumbnail(movie.url);
 
   return (
@@ -31,20 +29,17 @@ export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProp
         <DialogTrigger asChild>
           <button className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
             <PlayCircle className="h-16 w-16 text-white" />
+            <span className="sr-only">Play {movie.title}</span>
           </button>
         </DialogTrigger>
         <div className="aspect-video overflow-hidden">
-          {thumbnailUrl ? (
-             <Image
-              src={thumbnailUrl}
-              alt={`Thumbnail for ${movie.title}`}
-              width={400}
-              height={225}
-              className="h-full w-full object-cover transition-transform group-hover:scale-110"
-            />
-          ) : (
-             <div className="h-full w-full bg-muted" />
-          )}
+          <Image
+            src={thumbnailUrl || "https://placehold.co/400x225.png"}
+            alt={`Thumbnail for ${movie.title}`}
+            width={400}
+            height={225}
+            className="h-full w-full object-cover transition-transform group-hover:scale-110"
+          />
         </div>
         <div className="flex flex-1 flex-col p-4">
           <h3 className="flex-grow font-semibold leading-tight line-clamp-2">{movie.title}</h3>
@@ -74,10 +69,7 @@ export function MovieCard({ movie, onVote, onSelect, isSelected }: MovieCardProp
         </div>
         <DialogContent className="max-w-4xl p-0">
           <DialogHeader className="sr-only">
-            <DialogTitle>{movie.title}</DialogTitle>
-             <VisuallyHidden>
-              <DialogTitle>Video Player: {movie.title}</DialogTitle>
-            </VisuallyHidden>
+            <DialogTitle>Video Player: {movie.title}</DialogTitle>
           </DialogHeader>
           <div className="aspect-video">
             <iframe
