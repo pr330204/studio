@@ -13,7 +13,7 @@ export function Header({ onAddMovieClick }: HeaderProps) {
       <div className="container flex h-16 max-w-7xl items-center">
         <div className="mr-4 flex items-center">
           <Clapperboard className="h-8 w-8 text-primary" />
-          <span className="ml-3 text-2xl font-bold">VideoHub</span>
+          <span className="ml-3 text-2xl font-bold">Streamlined</span>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Button onClick={onAddMovieClick} size="lg" className="rounded-full">

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'VideoHub',
+  title: 'Streamlined',
   description: 'Find and share your favorite videos.',
 };
 
