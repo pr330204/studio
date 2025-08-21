@@ -13,7 +13,11 @@ function getYouTubeVideoId(url: string): string | null {
     if (urlObj.hostname === 'youtu.be') {
       videoId = urlObj.pathname.slice(1);
     } else if (urlObj.hostname.includes('youtube.com')) {
-      videoId = urlObj.searchParams.get('v');
+      if (urlObj.pathname.startsWith('/embed/')) {
+        videoId = urlObj.pathname.split('/')[2];
+      } else {
+        videoId = urlObj.searchParams.get('v');
+      }
     }
   } catch (error) {
     // Not a valid URL, ignore
