@@ -5,8 +5,8 @@ import { useState, useMemo } from "react";
 import { Header } from "@/components/header";
 import { MovieList } from "@/components/movie-list";
 import { AddMovieDialog } from "@/components/add-movie-dialog";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 // Initial placeholder data for movies
 const initialMovies: Movie[] = [
@@ -39,10 +39,17 @@ const initialMovies: Movie[] = [
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>(initialMovies);
   const [isAddMovieOpen, setAddMovieOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const sortedMovies = useMemo(() => {
-    return [...movies].sort((a, b) => b.votes - a.votes);
-  }, [movies]);
+  const sortedAndFilteredMovies = useMemo(() => {
+    const sorted = [...movies].sort((a, b) => b.votes - a.votes);
+    if (!searchQuery) {
+      return sorted;
+    }
+    return sorted.filter((movie) =>
+      movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [movies, searchQuery]);
 
   const handleVote = (id: string, type: "up" | "down") => {
     setMovies((prevMovies) =>
@@ -77,8 +84,18 @@ export default function Home() {
                 Vote for your favorite videos to watch next.
               </p>
             </div>
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search videos..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
-          <MovieList movies={sortedMovies} onVote={handleVote} />
+          <MovieList movies={sortedAndFilteredMovies} onVote={handleVote} />
         </div>
       </main>
       <AddMovieDialog
