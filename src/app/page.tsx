@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, doc, updateDoc, increment, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { MovieList } from "@/components/movie-list";
+import AdMobBanner from "@/components/admob-banner";
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -96,6 +97,7 @@ export default function Home() {
         onOpenChange={setAddMovieOpen}
         onMovieAdded={handleAddMovie}
       />
+      <AdMobBanner />
     </div>
   );
 }
