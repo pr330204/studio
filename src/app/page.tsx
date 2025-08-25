@@ -6,7 +6,7 @@ import { Header } from "@/components/header";
 import { AddMovieDialog } from "@/components/add-movie-dialog";
 import { Input } from "@/components/ui/input";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, addDoc, doc, updateDoc, increment, serverTimestamp, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { MovieList } from "@/components/movie-list";
 import AdMobBanner from "@/components/admob-banner";
 
@@ -15,10 +15,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [isAddMovieOpen, setAddMovieOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    const q = query(collection(db, "movies"), orderBy("votes", "desc"));
+    const q = query(collection(db, "movies"), orderBy("createdAt", "desc"));
     const unsub = onSnapshot(q, (snapshot) => {
       const moviesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Movie));
       setMovies(moviesData);
@@ -37,12 +36,6 @@ export default function Home() {
     );
   }, [movies, searchQuery]);
 
-  const handleVote = async (id: string, type: "up" | "down") => {
-    const movieRef = doc(db, "movies", id);
-    await updateDoc(movieRef, {
-      votes: increment(type === "up" ? 1 : -1)
-    });
-  };
 
   const handleAddMovie = async (movie: Omit<Movie, "id" | "votes">) => {
     await addDoc(collection(db, "movies"), {
@@ -54,41 +47,26 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
-      <Header onAddMovieClick={() => setAddMovieOpen(true)} />
+      <Header onAddMovieClick={() => setAddMovieOpen(true)} onSearch={setSearchQuery} />
       <main className="flex-1 px-4 py-6 md:px-6 lg:px-8">
-        <div className="container max-w-7xl">
-          <div className="mb-8 space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight">Watch Now</h1>
-            <div className="max-w-md">
-              <Input
-                type="search"
-                placeholder="Search videos..."
-                className="w-full bg-muted/40"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
-
+        <div className="container max-w-7xl mx-auto">
           {loading ? (
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
                 {[...Array(8)].map((_, i) => (
-                    <div key={i} className="flex flex-col gap-4 animate-pulse">
-                        <div className="w-full h-40 bg-muted rounded-md"></div>
-                        <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-muted rounded w-full"></div>
-                            <div className="h-4 bg-muted rounded w-2/3"></div>
+                    <div key={i} className="flex flex-col gap-2 animate-pulse">
+                        <div className="w-full aspect-video bg-muted rounded-lg"></div>
+                        <div className="flex gap-3">
+                           <div className="w-10 h-10 bg-muted rounded-full shrink-0"></div>
+                           <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-muted rounded w-full"></div>
+                                <div className="h-4 bg-muted rounded w-2/3"></div>
+                           </div>
                         </div>
                     </div>
                 ))}
             </div>
           ) : (
-            <MovieList 
-                movies={filteredMovies} 
-                onVote={handleVote} 
-                onMovieSelect={setSelectedMovie}
-                selectedMovieId={selectedMovie?.id}
-            />
+            <MovieList movies={filteredMovies} />
           )}
         </div>
       </main>

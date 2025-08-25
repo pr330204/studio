@@ -3,12 +3,11 @@ import { MovieCard } from "./movie-card";
 
 interface MovieListProps {
   movies: Movie[];
-  onVote: (id: string, type: "up" | "down") => void;
-  onMovieSelect: (movie: Movie) => void;
-  selectedMovieId?: string;
+  variant?: 'list' | 'grid';
+  className?: string;
 }
 
-export function MovieList({ movies, onVote }: MovieListProps) {
+export function MovieList({ movies, variant = 'grid', className }: MovieListProps) {
   if (movies.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-12 text-center col-span-full">
@@ -20,13 +19,27 @@ export function MovieList({ movies, onVote }: MovieListProps) {
     );
   }
 
+  if (variant === 'list') {
+     return (
+        <div className={`flex flex-col gap-4 ${className}`}>
+           {movies.map((movie) => (
+             <MovieCard 
+               key={movie.id} 
+               movie={movie} 
+               variant="list"
+             />
+           ))}
+        </div>
+     );
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 ${className}`}>
       {movies.map((movie) => (
         <MovieCard 
           key={movie.id} 
           movie={movie} 
-          onVote={onVote}
+          variant="grid"
         />
       ))}
     </div>
