@@ -21,6 +21,7 @@ export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isClient, setIsClient] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,6 +30,10 @@ export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
   const { toast } = useToast();
 
   const isWatchPage = pathname === '/watch';
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (!SpeechRecognition) {
@@ -151,7 +156,7 @@ export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
                         value={searchQuery}
                         onChange={handleSearchChange}
                     />
-                    {SpeechRecognition && (
+                    {isClient && SpeechRecognition && (
                         <Button
                             size="icon"
                             variant="ghost"
