@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { checkMovieLinkAction } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
@@ -114,7 +115,7 @@ export function AddMovieDialog({ isOpen, onOpenChange, onMovieAdded }: AddMovieD
             </DialogHeader>
             <form onSubmit={handlePasswordSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
-                <FormLabel htmlFor="password">Password</FormLabel>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
