@@ -1,31 +1,107 @@
 "use client";
 
-import { Play, Plus, Search, ArrowLeft } from "lucide-react";
+import { Play, Plus, Search, ArrowLeft, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
-
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   onAddMovieClick: () => void;
   onSearch?: (query: string) => void;
 }
 
+// Check for SpeechRecognition API
+const SpeechRecognition =
+  (typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
+
 export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
   const [isSearchVisible, setSearchVisible] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   const isWatchPage = pathname === '/watch';
 
+  useEffect(() => {
+    if (!SpeechRecognition) {
+      return;
+    }
+    
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+      onSearch?.(transcript);
+    };
+    
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        setIsListening(false);
+        toast({
+            variant: "destructive",
+            title: "Voice Search Error",
+            description: "Could not recognize your speech. Please try again.",
+        })
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      recognition.stop();
+    };
+
+  }, [onSearch, toast]);
+
+
   const handleSearchToggle = () => {
     if (isSearchVisible) {
+      setSearchQuery("");
       onSearch?.("");
     }
     setSearchVisible(!isSearchVisible);
   };
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Not Supported",
+            description: "Your browser does not support voice search.",
+        })
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    onSearch?.(e.target.value);
+  }
 
   if (isWatchPage) {
      return (
@@ -68,11 +144,23 @@ export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
                 <div className="relative">
                     {isSearchVisible && <Button size="icon" variant="ghost" className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 sm:hidden" onClick={handleSearchToggle}><ArrowLeft/></Button>}
                     <Input 
+                        ref={searchInputRef}
                         type="search" 
                         placeholder="Search videos..."
-                        className={`w-full bg-muted/40 ${isSearchVisible ? 'pl-10 sm:pl-3' : ''}`}
-                        onChange={(e) => onSearch?.(e.target.value)}
+                        className={`w-full bg-muted/40 pr-10 ${isSearchVisible ? 'pl-10 sm:pl-3' : ''}`}
+                        value={searchQuery}
+                        onChange={handleSearchChange}
                     />
+                    {SpeechRecognition && (
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                            onClick={handleMicClick}
+                        >
+                            {isListening ? <MicOff className="text-destructive" /> : <Mic />}
+                        </Button>
+                    )}
                 </div>
             </div>
            
