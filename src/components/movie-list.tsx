@@ -3,7 +3,7 @@ import { MovieCard } from "./movie-card";
 
 interface MovieListProps {
   movies: Movie[];
-  variant?: 'list' | 'grid';
+  variant?: 'list' | 'grid' | 'grid-condensed';
   className?: string;
 }
 
@@ -32,6 +32,21 @@ export function MovieList({ movies, variant = 'grid', className }: MovieListProp
         </div>
      );
   }
+  
+  if (variant === 'grid-condensed') {
+    return (
+      <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ${className}`}>
+        {movies.map((movie) => (
+          <MovieCard 
+            key={movie.id} 
+            movie={movie} 
+            variant="grid"
+          />
+        ))}
+      </div>
+    );
+  }
+
 
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 ${className}`}>

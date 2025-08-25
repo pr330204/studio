@@ -32,6 +32,9 @@ export function Header({ onAddMovieClick, onSearch }: HeaderProps) {
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/80 backdrop-blur-lg">
           <div className="container flex h-16 max-w-7xl items-center mx-auto px-4">
              <div className="mr-4 flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => router.back()} className="mr-2">
+                  <ArrowLeft className="h-6 w-6" />
+              </Button>
               <Link href="/" className="flex items-center gap-3">
                 <div className="bg-primary text-primary-foreground rounded-md p-2">
                   <Play className="h-6 w-6" />

@@ -37,6 +37,7 @@ export function MovieCard({ movie, variant = 'grid' }: MovieCardProps) {
     );
   }
 
+  // Grid variant
   return (
     <Link href={`/watch?v=${movie.id}`} className="group">
         <div className="aspect-video overflow-hidden rounded-lg">
@@ -49,15 +50,15 @@ export function MovieCard({ movie, variant = 'grid' }: MovieCardProps) {
             data-ai-hint="video thumbnail"
           />
         </div>
-        <div className="flex gap-3 mt-3">
-           <Avatar className="h-9 w-9">
+        <div className="flex gap-3 mt-2">
+           <Avatar className="h-9 w-9 mt-0.5">
                <AvatarImage src="https://placehold.co/36x36.png" data-ai-hint="logo" />
                <AvatarFallback>{channelLetter}</AvatarFallback>
            </Avatar>
            <div className="flex-grow">
-              <h3 className="font-semibold leading-snug line-clamp-2">{movie.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">Streamlined</p>
-              <p className="text-sm text-muted-foreground">{movie.votes} votes</p>
+              <h3 className="font-semibold leading-snug line-clamp-2 text-sm">{movie.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">Streamlined</p>
+              <p className="text-xs text-muted-foreground">{movie.votes} votes</p>
            </div>
         </div>
     </Link>
